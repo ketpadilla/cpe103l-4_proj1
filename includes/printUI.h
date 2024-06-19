@@ -1,12 +1,17 @@
 // * function for printing text on CLI
 /* template
 
-
-
-
-
+————————————————————————————————————
+—                FBC               —
+—   Filipinas Banking Corporation  —
+————————————————————————————————————
+—                                  —
+—                                  —
+—                                  —
+————————————————————————————————————
 
 */
+
 // header files and namespace
 #include <iostream>
 #include <string>
@@ -24,21 +29,24 @@ double calculateSpace(double lineSpace, double len);
 string bankNm[2] = {"FBC", "Filipinas Banking Corporation"};
 
 
-// main
-void printUI(string text) {
-  // get user name
-  string nm;
-  cout << "Name: ";
-  getline(cin, nm); // get input with spaces
+// * main
+void printUI(string text[], int size) {
 
-  // ! TO REVISE ONCE MAIN HAS MORE PROGRESS
-  // initialize line text and place into an array
-  string l3 = "Author: " + nm;
-  string l4 = "Due Date: Thursday, Jan. 24";
-  string lines[4] = {bankNm[0], bankNm[1], l3, l4};
+  // initialize array of strings to be printed and their lengths
+  string lines[size + 2];
+  int len[size + 2];
 
-  // get the character lenght of each line
-  double len[4] = {bankNm[0].length(), bankNm[1].length(), l3.length(), l4.length()};
+  // assign bank name to the first two lines
+  lines[0] = bankNm[0]; 
+  lines[1] = bankNm[1]; 
+  len[0] = bankNm[0].length();
+  len[1] = bankNm[1].length();
+  
+  // assign remaining text to be printed and their lengths
+  for (int i = 0; i < size; i++) {
+    lines[i+2] = text[i];
+    len[i+2] = text[i].length();
+  }
 
   // determine the line with the most characters
   int index = 0;
@@ -56,7 +64,7 @@ void printUI(string text) {
   */
   double lineSpace = len[index] + 7.00; // add a few blank spaces (7.00) to the longest line
   double spacing = calculateSpace(lineSpace, double(len[0]));
-  int totalLines = sizeof(lines)/sizeof(lines[0]); 
+  int totalLines = size + 2; 
 
   // print upper border 
   printBorder(lineSpace);
@@ -136,6 +144,7 @@ void printUI(string text) {
 } 
 
 
+// * helper functions
 // print the border with "—" up to the lenght of the longest line
 void printBorder(int n) {
   for (int i = 0; i < n; i++) {

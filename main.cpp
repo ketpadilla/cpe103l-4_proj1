@@ -15,7 +15,8 @@ using namespace std;
 
 
 // prototype functions
-// void printUI(string text);
+char homeScreen(char choice);
+string identifyUser(string accounts[5][4], string userID, string admin[4]);
 
 // global variables
 string accounts[5][4] = {
@@ -32,12 +33,72 @@ int userAcct;
 
 // * main
 int main() {
-  printUI("Kristian");
+  char choice;
+  choice = homeScreen(choice);
+
+  // ! TO BE IMPLEMENTED
+  switch (choice) {
+    case 'S':
+      userID = identifyUser(accounts, userID, admin);
+      break;
+    case 'Q':
+      cout << "Quit" << endl;
+      break;
+    default:
+      cout << "Invalid choice" << endl;
+      break;
+  }
+
   return 0;
 }
 
 
-// void printUI(string text);
+// * function definitions
+// output #1
+char homeScreen(char choice) {
+  char options[2] = {'S', 'Q'};
+  string text[3] = {
+    "S -> Start Transaction",
+    "Q -> Quit",
+    "Enter your choice: _____" 
+  };
 
+  // print screen contents
+  printUI(text, sizeof(text)/sizeof(text[0]));
+
+  // get user choice
+  cout << "Choice: ";
+  cin >> choice;
+
+  // validate user input
+  // ! TO IMPLEMENT: user input validation
+
+  // return user choice
+  return choice;
+}
+
+
+// output #2
+string identifyUser(string accounts[5][4], string userID, string admin[4]) {
+  string userNum, acctPin;
+  int index;
+  char choice;
+  string text[2] = {
+    "Enter your pin number:",
+    "__________"
+  };
+
+  // print screen contents
+  printUI(text, sizeof(text)/sizeof(text[0]));
+
+  // get acct pin
+  cout << "Pin: ";
+  cin >> acctPin;
+
+  // ! TO BE IMPLEMENTED
+  return "To be implemented...";
+}
+
+// ! TO BE IMPLEMENTED
 
 
