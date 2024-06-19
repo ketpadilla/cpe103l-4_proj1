@@ -20,8 +20,10 @@ using namespace std;
 // prototype functions
 char homeScreen(char choice);
 char transactionScreen(char choice);
-void balanceScreen(string accounts[5][4], string userID, int index);
-void withdrawalScreen(string accounts[5][4], string userID, int index);
+char customerOptions(char choice, string accounts[5][4], string userID, int index);
+char balanceScreen(string accounts[5][4], string userID, int index);
+char withdrawalScreen(string accounts[5][4], string userID, int index);
+char depositScreen(string accounts[5][4], string userID, int index);
 string identifyUser(string accounts[5][4], string userID, string admin[4]);
 
 // global variables
@@ -41,7 +43,7 @@ int userAcct;
 int main() {
   char choice;
 
-  // main
+  // start
   choice = homeScreen(choice);
   switch (choice) {
     case 'S':
@@ -56,33 +58,20 @@ int main() {
 
   }
 
-
   // final user validation
   if (userID == "-1") {
     return 1;
   }
 
-  // ! PLACE INTO A FUNCTION TO BE REPEATED
-  // customer transaction
-  choice = transactionScreen(choice);
   // find index of userID in accounts
   int index = findIndex(accounts, userID);  
-  switch (choice) {
-    case 'B':
-      balanceScreen(accounts, userID, index);
-      break;
-    case 'W':
-      withdrawalScreen(accounts, userID, index);
-      break;
-    case 'D':
 
-      break;
-    case 'C':
-      cout << "Canceling transaction" << endl;
-      return 0;
-    default:
-      cout << "Invalid choice" << endl;
-      return 1;
+  // customer transaction
+  choice = transactionScreen(choice);
+  choice = customerOptions(choice, accounts, userID, index);
+  while (choice != 'X') {
+    choice = transactionScreen(choice);
+    choice = customerOptions(choice, accounts, userID, index);
   }
 
   return 0;
@@ -176,8 +165,33 @@ char transactionScreen(char choice) {
 }
 
 
+// output #3 
+char customerOptions(char choice, string accounts[5][4], string userID, int index) {
+  switch (choice) {
+    case 'B':
+      choice = balanceScreen(accounts, userID, index);
+      break;
+    case 'W':
+      choice = withdrawalScreen(accounts, userID, index);
+      break;
+    case 'D':
+      choice = depositScreen(accounts, userID, index);
+      break;
+    case 'C':
+      cout << "Canceling transaction" << endl;
+      choice = 'X';
+      break;
+    default:
+      cout << "Invalid choice" << endl;
+      choice = 'X';
+      break;
+  }
+
+  return choice;
+}
+
 // output #4 (balance)
-void balanceScreen(string accounts[5][4], string userID, int index) {
+char balanceScreen(string accounts[5][4], string userID, int index) {
   // exit option
   char options[4] = {'X'};
   int size = sizeof(options)/sizeof(options[0]);
@@ -196,11 +210,12 @@ void balanceScreen(string accounts[5][4], string userID, int index) {
 
   // get and validate and exit
   char choice = validateChoice(choice, options, size);
+  return choice;
 }
 
 
 // output #4 (withdrawal)
-void withdrawalScreen(string accounts[5][4], string userID, int index) {
+char withdrawalScreen(string accounts[5][4], string userID, int index) {
   // exit option
   char choice;
   char options[4] = {'X'};
@@ -225,7 +240,7 @@ void withdrawalScreen(string accounts[5][4], string userID, int index) {
 
     // Check if the input is 'X'
     if (toupper(withdrawAmt[0]) == 'X' && withdrawAmt.length() == 1) {
-      return;
+        return choice;
     }
 
     // Check if the input is a valid number
@@ -246,7 +261,7 @@ void withdrawalScreen(string accounts[5][4], string userID, int index) {
           balance -= amount;
           accounts[index][2] = to_string(balance);
           cout << "Withdrawal successful.";
-          return;
+          return 'S';
         }
       } catch (const invalid_argument &e) {
         cout << "Invalid input. Please enter a valid amount." << endl;
@@ -262,6 +277,68 @@ void withdrawalScreen(string accounts[5][4], string userID, int index) {
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
   }
 }
+
+
+// output #4 (deposit)
+char depositScreen(string accounts[5][4], string userID, int index) {
+  // exit option
+  char choice;
+  char options[4] = {'X'};
+  int size = sizeof(options)/sizeof(options[0]);
+
+  string depositAmt;
+  double balance = stod(accounts[index][2]);
+  
+  string text[4] = {
+    "Enter amount to be widrawn",  
+    "__________",  
+    " ",  
+    "Press X to Exit."
+  };
+
+  // print screen contents
+  printUI(text, sizeof(text)/sizeof(text[0]));
+
+  while (true) {
+    cout << "Amount: ";
+    cin >> depositAmt;
+
+    // Check if the input is 'X'
+    if (toupper(depositAmt[0]) == 'X' && depositAmt.length() == 1) {
+      return choice;
+    }
+
+    // Check if the input is a valid number
+    bool valid = true;
+    for (int i = 0; i < depositAmt.length(); ++i) {
+      if (!isdigit(depositAmt[i])) {
+        valid = false;
+        break;
+      }
+    }
+
+    if (valid) {
+      try {
+        double amount = stod(depositAmt);
+        balance += amount;
+        accounts[index][2] = to_string(balance);
+        cout << "Withdrawal successful.";
+        return 'S';
+      } catch (const invalid_argument &e) {
+        cout << "Invalid input. Please enter a valid amount." << endl;
+      } catch (const out_of_range &e) {
+        cout << "Invalid input. Please enter a valid amount." << endl;
+      }
+    } else {
+      cout << "Invalid input. Please enter a valid amount or 'X' to exit." << endl;
+    }
+
+    // Clear input buffer
+    cin.clear();
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+  }
+}
+
 
 // ! TO BE IMPLEMENTED
 

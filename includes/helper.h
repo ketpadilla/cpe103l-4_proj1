@@ -20,8 +20,12 @@ char validateChoice(char choice, char options[], int size) {
     }
   }
 
-  // if input is invalid, prompt again
+  // if input is invalid
   cout << "Invalid input" << endl;
+
+  // clear input buffer and prompt again
+  cin.clear();
+  cin.ignore(numeric_limits<streamsize>::max(), '\n');
   return validateChoice(choice, options, size);
 }
 
@@ -32,6 +36,7 @@ string validateUser(string text, string input, string accounts[5][4], int attemp
     return "-1";
   };
 
+  cout << "Attempts left: " << 3 - attempts << endl;
   cout << text << ": ";
   cin >> input;
 
