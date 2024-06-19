@@ -86,4 +86,84 @@ int findIndex(string accounts[5][4], string userID) {
   return -1;
 }
 
+
+// show customer details
+void showDetails(string accounts[5][4]) {
+  for (int i = 0; i < 5; i++) {
+    cout << "Account Number: " << accounts[i][0] << endl;
+    cout << "Name: " << accounts[i][1] << endl;
+    cout << "Balance: " << accounts[i][2] << endl;
+    cout << "PIN: " << accounts[i][3] << endl;
+    cout << endl;
+  }
+}
+
+
+// edit customer details
+void editDetails(string accounts[5][4]) {
+  // get userID
+  string userID;
+  cout << "Enter account number: ";
+  cin >> userID;
+
+  // print current details
+  int index = findIndex(accounts, userID);
+  cout << "Account details:" << endl;
+  for (int i = 0; i < 4; i++) {
+    cout << accounts[index][i] << endl;
+  }
+
+  // change details
+  if (index != -1) {
+    cout << "Enter new name: ";
+    cin.ignore();
+    getline(cin, accounts[index][1]);
+
+    cout << "Enter new balance: ";
+    cin >> accounts[index][2];
+    
+    cout << "Details updated successfully!" << endl;
+  } else {
+    cout << "User not found!" << endl;
+  }
+
+  // print new details
+  cout << endl << "Account details:" << endl;
+  for (int i = 0; i < 4; i++) {
+    cout << accounts[index][i] << endl;
+  }
+}
+
+
+// change customer
+void changePin(string accounts[5][4]) {
+  // get userID
+  string userID;
+  cout << "Enter account number: ";
+  cin >> userID;
+
+  // print current details
+  int index = findIndex(accounts, userID);
+  cout << "Account details:" << endl;
+  for (int i = 0; i < 4; i++) {
+    cout << accounts[index][i] << endl;
+  }
+
+  // change pin
+  if (index != -1) {
+    cout << "Enter new PIN: ";
+    cin >> accounts[index][3];
+    cout << endl << "Pin updated successfully!" << endl;
+  } else {
+    cout << "User not found!" << endl;
+  }
+
+  // print new details
+  cout << "Account details:" << endl;
+  for (int i = 0; i < 4; i++) {
+    cout << accounts[index][i] << endl;
+  }
+}
+
+
 #endif // HELPER_H

@@ -25,7 +25,9 @@ char customerOptions(char choice, string accounts[5][4], string userID, int inde
 char balanceScreen(string accounts[5][4], string userID, int index);
 char withdrawalScreen(string accounts[5][4], string userID, int index);
 char depositScreen(string accounts[5][4], string userID, int index);
+char adminPages(char choice, string accounts[5][4]);
 string identifyUser(string accounts[5][4], string userID);
+
 
 // global variables
 string accounts[5][4] = {
@@ -66,6 +68,7 @@ int main() {
   // admin access
   while (userID == admin[0]) {
     choice = adminScreen(choice);
+    choice = adminPages(choice, accounts);
     if (choice == 'X') {
       return 0;
     }
@@ -75,11 +78,12 @@ int main() {
   int index = findIndex(accounts, userID);  
 
   // customer transaction
-  choice = transactionScreen(choice);
-  choice = customerOptions(choice, accounts, userID, index);
-  while (choice != 'X') {
+  for (;;) {
     choice = transactionScreen(choice);
     choice = customerOptions(choice, accounts, userID, index);
+    if (choice == 'X') {
+      break;
+    }
   }
 
   return 0;
@@ -351,4 +355,35 @@ char depositScreen(string accounts[5][4], string userID, int index) {
     cin.clear();
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
   }
+}
+
+
+// output #5 (admin only)
+char adminPages(char choice, string accounts[5][4]) {
+  switch (choice) {
+    case 'V':
+      showDetails(accounts);
+      cout << "Press any key to continue." << endl;
+      cin.ignore(numeric_limits<streamsize>::max(), '\n');
+      cin.get();
+      break;
+    case 'A':
+      cout << "To implement." << endl;
+      break;
+    case 'E':
+      editDetails(accounts);
+      break;
+    case 'C':
+      changePin(accounts);
+      break;
+    case 'X':
+      cout << "Exiting program." << endl;
+      choice = 'X';
+      break;
+    default:
+      cout << "Invalid choice." << endl;
+      choice = 'X';
+      break;
+  }
+  return choice;
 }
