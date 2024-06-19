@@ -66,7 +66,7 @@ int main() {
   }
 
   // admin access
-  //! TO REVISE SO THAT ARRAY UPDATES SEMI-PERMANENTLY
+  //! TO REVISE SO THAT ARRAY UPDATES SEMI-PERMANENTY
   bool adminAccess = false;
   if (userID == admin[0]) {
     adminAccess = true;
