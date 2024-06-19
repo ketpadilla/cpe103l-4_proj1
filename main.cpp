@@ -14,6 +14,7 @@
 #include <cctype>
 #include "includes/printUI.h"
 #include "includes/helper.h"
+#include "includes/admin.h"
 using namespace std;
 
 
@@ -24,7 +25,7 @@ char customerOptions(char choice, string accounts[5][4], string userID, int inde
 char balanceScreen(string accounts[5][4], string userID, int index);
 char withdrawalScreen(string accounts[5][4], string userID, int index);
 char depositScreen(string accounts[5][4], string userID, int index);
-string identifyUser(string accounts[5][4], string userID, string admin[4]);
+string identifyUser(string accounts[5][4], string userID);
 
 // global variables
 string accounts[5][4] = {
@@ -34,7 +35,6 @@ string accounts[5][4] = {
   {"4567-8901-2345", "Mina Mahal", "2500", "4444"},
   {"5678-9012-3456", "Cory Pot", "10000.00", "5555"}
 };
-string admin[4] = {"0000-0000-0001", "Admin", "None", "0000"};
 string userID;
 int userAcct;
 
@@ -47,7 +47,7 @@ int main() {
   choice = homeScreen(choice);
   switch (choice) {
     case 'S':
-      userID = identifyUser(accounts, userID, admin);
+      userID = identifyUser(accounts, userID);
       break;
     case 'Q':
       cout << "Quiting program" << endl;
@@ -63,6 +63,13 @@ int main() {
     return 1;
   }
 
+  // admin access
+  if (userID == admin[0]) {
+    cout << "Access granted" << endl;
+    // ! To implement
+    return 0;
+  }
+  
   // find index of userID in accounts
   int index = findIndex(accounts, userID);  
 
@@ -98,7 +105,7 @@ char homeScreen(char choice) {
 
 
 // output #2
-string identifyUser(string accounts[5][4], string userID, string admin[4]) {
+string identifyUser(string accounts[5][4], string userID) {
   string userNum, acctPin;
   int size = 5; 
   int attempts = 0;
@@ -129,7 +136,13 @@ string identifyUser(string accounts[5][4], string userID, string admin[4]) {
   printUI(textPin, sizeof(textPin)/sizeof(textPin[0]));
 
   // get and validate user input
-  acctPin = validateUser("Pin", acctPin, accounts, attempts, size, 3);
+  if (userNum == "0") {
+    acctPin = validateAdmin("Pin", acctPin, admin, attempts, 3);
+    userNum = admin[0];
+  } else {
+    acctPin = validateUser("Pin", acctPin, accounts, attempts, size, 3);
+  }
+
   if (acctPin == "-1") {
     cout << "CAPTURED CARD…. PLEASE CALL 143-44" << endl;
     return "-1";
@@ -338,7 +351,3 @@ char depositScreen(string accounts[5][4], string userID, int index) {
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
   }
 }
-
-
-// ! TO BE IMPLEMENTED
-

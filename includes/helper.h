@@ -1,7 +1,11 @@
+#ifndef HELPER_H
+#define HELPER_H
+
 // header files and namespace
 #include <iostream>
 #include <string>
 #include <cmath>
+#include "admin.h"
 using namespace std;
 
 
@@ -40,6 +44,10 @@ string validateUser(string text, string input, string accounts[5][4], int attemp
   cout << text << ": ";
   cin >> input;
 
+  if (checkAdmin(input)) {
+    return "0";
+  }
+
   string output = input;
   input.erase(remove(input.begin(), input.end(), '-'), input.end());
 
@@ -77,3 +85,5 @@ int findIndex(string accounts[5][4], string userID) {
 
   return -1;
 }
+
+#endif // HELPER_H
