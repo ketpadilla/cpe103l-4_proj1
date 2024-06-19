@@ -35,7 +35,7 @@ char validateChoice(char choice, char options[], int size) {
 
 
 // validate user data
-string validateUser(string text, string input, string accounts[5][4], int attempts, int size, int index) {
+string validateUser(string text, string input, string accounts[][4], int attempts, int size, int index) {
   if (attempts == 3) {
     return "-1";
   };
@@ -76,7 +76,7 @@ string validateUser(string text, string input, string accounts[5][4], int attemp
 
 
 // find index of userID in accounts
-int findIndex(string accounts[5][4], string userID) {
+int findIndex(string accounts[][4], string userID) {
   for (int i = 0; i < 5; i++) {
     if (userID == accounts[i][0]) {
       return i;
@@ -88,7 +88,7 @@ int findIndex(string accounts[5][4], string userID) {
 
 
 // show customer details
-void showDetails(string accounts[5][4]) {
+void showDetails(string accounts[][4]) {
   for (int i = 0; i < 5; i++) {
     cout << "Account Number: " << accounts[i][0] << endl;
     cout << "Name: " << accounts[i][1] << endl;
@@ -100,7 +100,7 @@ void showDetails(string accounts[5][4]) {
 
 
 // edit customer details
-void editDetails(string accounts[5][4]) {
+void editDetails(string accounts[][4]) {
   // get userID
   string userID;
   cout << "Enter account number: ";
@@ -136,7 +136,7 @@ void editDetails(string accounts[5][4]) {
 
 
 // change customer
-void changePin(string accounts[5][4]) {
+void changePin(string accounts[][4]) {
   // get userID
   string userID;
   cout << "Enter account number: ";
@@ -163,6 +163,44 @@ void changePin(string accounts[5][4]) {
   for (int i = 0; i < 4; i++) {
     cout << accounts[index][i] << endl;
   }
+}
+
+
+// ! new customer does not save to array
+// add new customer
+string addCustomer(string accounts[][4]) {
+  // get size
+  int size = 0;
+  for (int i = 0; i < 5; i++) {
+    if (accounts[i][0].empty()) {
+      break;
+    }
+    size++;
+  }
+
+  cout << size << endl;
+  // get user input for new customer details
+  string accountNumber, name, balance, pin;
+  cout << "Enter account number: ";
+  cin >> accountNumber;
+  cout << "Enter name: ";
+  cin.ignore();
+  getline(cin, name);
+  cout << "Enter balance: ";
+  cin >> balance;
+  cout << "Enter PIN: ";
+  cin >> pin;
+
+  // add new customer to the accounts array
+  accounts[size + 1][0] = accountNumber;
+  accounts[size + 1][1] = name;
+  accounts[size + 1][2] = balance;
+  accounts[size + 1][3] = pin;
+
+  // increment the size counter
+  size++;
+
+  cout << "New customer added successfully!" << endl;
 }
 
 

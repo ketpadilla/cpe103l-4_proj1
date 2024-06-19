@@ -21,16 +21,16 @@ using namespace std;
 // prototype functions
 char homeScreen(char choice);
 char transactionScreen(char choice);
-char customerOptions(char choice, string accounts[5][4], string userID, int index);
-char balanceScreen(string accounts[5][4], string userID, int index);
-char withdrawalScreen(string accounts[5][4], string userID, int index);
-char depositScreen(string accounts[5][4], string userID, int index);
-char adminPages(char choice, string accounts[5][4]);
-string identifyUser(string accounts[5][4], string userID);
+char customerOptions(char choice, string accounts[][4], string userID, int index);
+char balanceScreen(string accounts[][4], string userID, int index);
+char withdrawalScreen(string accounts[][4], string userID, int index);
+char depositScreen(string accounts[][4], string userID, int index);
+char adminPages(char choice, string accounts[][4]);
+string identifyUser(string accounts[][4], string userID);
 
 
 // global variables
-string accounts[5][4] = {
+string accounts[][4] = {
   {"0123-4567-8901", "Dina Bale", "5000.00", "1111"},
   {"2345-6789-0123", "Mally Gaya", "0.00", "2222"},
   {"3456-7890-1234", "Toto Lee", "10000.00", "3333"},
@@ -110,7 +110,7 @@ char homeScreen(char choice) {
 
 
 // output #2
-string identifyUser(string accounts[5][4], string userID) {
+string identifyUser(string accounts[][4], string userID) {
   string userNum, acctPin;
   int size = 5; 
   int attempts = 0;
@@ -184,7 +184,7 @@ char transactionScreen(char choice) {
 
 
 // output #3 
-char customerOptions(char choice, string accounts[5][4], string userID, int index) {
+char customerOptions(char choice, string accounts[][4], string userID, int index) {
   switch (choice) {
     case 'B':
       choice = balanceScreen(accounts, userID, index);
@@ -209,13 +209,13 @@ char customerOptions(char choice, string accounts[5][4], string userID, int inde
 }
 
 // output #4 (balance)
-char balanceScreen(string accounts[5][4], string userID, int index) {
+char balanceScreen(string accounts[][4], string userID, int index) {
   // exit option
   char options[4] = {'X'};
   int size = sizeof(options)/sizeof(options[0]);
 
   // print balance
-  string text[5] = {
+  string text[] = {
     "Account #: " + accounts[index][0],  
     "Account Name: " + accounts[index][1],  
     "Balance: " + accounts[index][2],  
@@ -233,7 +233,7 @@ char balanceScreen(string accounts[5][4], string userID, int index) {
 
 
 // output #4 (withdrawal)
-char withdrawalScreen(string accounts[5][4], string userID, int index) {
+char withdrawalScreen(string accounts[][4], string userID, int index) {
   // exit option
   char choice;
   char options[4] = {'X'};
@@ -298,7 +298,7 @@ char withdrawalScreen(string accounts[5][4], string userID, int index) {
 
 
 // output #4 (deposit)
-char depositScreen(string accounts[5][4], string userID, int index) {
+char depositScreen(string accounts[][4], string userID, int index) {
   // exit option
   char choice;
   char options[4] = {'X'};
@@ -359,7 +359,7 @@ char depositScreen(string accounts[5][4], string userID, int index) {
 
 
 // output #5 (admin only)
-char adminPages(char choice, string accounts[5][4]) {
+char adminPages(char choice, string accounts[][4]) {
   switch (choice) {
     case 'V':
       showDetails(accounts);
@@ -368,7 +368,7 @@ char adminPages(char choice, string accounts[5][4]) {
       cin.get();
       break;
     case 'A':
-      cout << "To implement." << endl;
+      addCustomer(accounts);
       break;
     case 'E':
       editDetails(accounts);
