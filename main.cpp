@@ -64,10 +64,11 @@ int main() {
   }
 
   // admin access
-  if (userID == admin[0]) {
-    cout << "Access granted" << endl;
-    // ! To implement
-    return 0;
+  while (userID == admin[0]) {
+    choice = adminScreen(choice);
+    if (choice == 'X') {
+      return 0;
+    }
   }
   
   // find index of userID in accounts
@@ -273,7 +274,7 @@ char withdrawalScreen(string accounts[5][4], string userID, int index) {
         } else {
           balance -= amount;
           accounts[index][2] = to_string(balance);
-          cout << "Withdrawal successful.";
+          cout << "Withdrawal successful." << endl;
           return 'S';
         }
       } catch (const invalid_argument &e) {
@@ -335,7 +336,7 @@ char depositScreen(string accounts[5][4], string userID, int index) {
         double amount = stod(depositAmt);
         balance += amount;
         accounts[index][2] = to_string(balance);
-        cout << "Withdrawal successful.";
+        cout << "Deposit successful."  << endl;
         return 'S';
       } catch (const invalid_argument &e) {
         cout << "Invalid input. Please enter a valid amount." << endl;
