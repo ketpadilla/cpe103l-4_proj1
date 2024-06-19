@@ -18,8 +18,9 @@ using namespace std;
 
 // prototype functions
 char homeScreen(char choice);
+char transactionScreen(char choice);
+void balanceScreen(string accounts[5][4], string userID);
 string identifyUser(string accounts[5][4], string userID, string admin[4]);
-
 
 // global variables
 string accounts[5][4] = {
@@ -37,21 +38,46 @@ int userAcct;
 // * main
 int main() {
   char choice;
-  choice = homeScreen(choice);
 
-  // ! TO BE IMPLEMENTED
+  // main
+  choice = homeScreen(choice);
   switch (choice) {
     case 'S':
       userID = identifyUser(accounts, userID, admin);
-      cout << userID << endl;
       break;
     case 'Q':
-      cout << "Quit" << endl;
-      break;
+      cout << "Quiting program" << endl;
+      return 0;
     default:
       cout << "Invalid choice" << endl;
-      break;
+      return 1;
 
+  }
+
+
+  // final user validation
+  if (userID == "-1") {
+    return 1;
+  }
+
+  // customer transaction
+  choice = transactionScreen(choice);
+  switch (choice) {
+    case 'B':
+      balanceScreen(accounts, userID);
+      break;
+    case 'W':
+
+      break;
+    case 'D':
+
+      break;
+    case 'C':
+      cout << "Canceling transaction" << endl;
+      return 0;
+    default:
+      cout << "Invalid choice" << endl;
+      return 1;
   }
 
   return 0;
@@ -109,7 +135,7 @@ string identifyUser(string accounts[5][4], string userID, string admin[4]) {
   printUI(textPin, sizeof(textPin)/sizeof(textPin[0]));
 
   // get and validate user input
-  acctPin = validateUser("Account Number", acctPin, accounts, attempts, size, 3);
+  acctPin = validateUser("Pin", acctPin, accounts, attempts, size, 3);
   if (acctPin == "-1") {
     cout << "CAPTURED CARD…. PLEASE CALL 143-44" << endl;
     return "-1";
@@ -118,5 +144,53 @@ string identifyUser(string accounts[5][4], string userID, string admin[4]) {
   // return validated account number
   return userNum;
 }
+
+
+// output #3
+char transactionScreen(char choice) {
+  // transaction options
+  char options[4] = {'B', 'W', 'D', 'C'};
+  int size = sizeof(options)/sizeof(options[0]);
+  string text[8] = {
+    "Select Type of Transaction",
+    " ",
+    "B -> Balance Inquiry",
+    "W -> Withdrawal",
+    "D -> Deposit",
+    "C -> Cancel",
+    " ",
+    "Enter transaction type: _____"
+  };
+
+  // print screen contents
+  printUI(text, sizeof(text)/sizeof(text[0]));
+ 
+  // get, validate, and return choice
+  choice = validateChoice(choice, options, size);
+  return choice;
+}
+
+
+// output #4 (balance)
+void balanceScreen(string accounts[5][4], string userID) {
+  // find index of userID in accounts
+  int index = -1;
+  for (int i = 0; i < 5; i++) {
+    if (userID == accounts[i][0]) {
+      index = i;
+    }
+  }
+
+  // print balance
+  string text[3] = {
+    "Account #: " + accounts[index][0],  
+    "Account Name: " + accounts[index][1],  
+    "Balance: " + accounts[index][2],  
+  };
+
+  // print screen contents
+  printUI(text, sizeof(text)/sizeof(text[0]));
+}
+
 
 // ! TO BE IMPLEMENTED
