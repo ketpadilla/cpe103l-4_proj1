@@ -11,6 +11,7 @@
 #include <iostream>
 #include <string>
 #include <limits>
+#include <cctype>
 #include "includes/printUI.h"
 #include "includes/helper.h"
 using namespace std;
@@ -19,7 +20,8 @@ using namespace std;
 // prototype functions
 char homeScreen(char choice);
 char transactionScreen(char choice);
-void balanceScreen(string accounts[5][4], string userID);
+void balanceScreen(string accounts[5][4], string userID, int index);
+void withdrawalScreen(string accounts[5][4], string userID, int index);
 string identifyUser(string accounts[5][4], string userID, string admin[4]);
 
 // global variables
@@ -60,14 +62,17 @@ int main() {
     return 1;
   }
 
+  // ! PLACE INTO A FUNCTION TO BE REPEATED
   // customer transaction
   choice = transactionScreen(choice);
+  // find index of userID in accounts
+  int index = findIndex(accounts, userID);  
   switch (choice) {
     case 'B':
-      balanceScreen(accounts, userID);
+      balanceScreen(accounts, userID, index);
       break;
     case 'W':
-
+      withdrawalScreen(accounts, userID, index);
       break;
     case 'D':
 
@@ -172,25 +177,91 @@ char transactionScreen(char choice) {
 
 
 // output #4 (balance)
-void balanceScreen(string accounts[5][4], string userID) {
-  // find index of userID in accounts
-  int index = -1;
-  for (int i = 0; i < 5; i++) {
-    if (userID == accounts[i][0]) {
-      index = i;
-    }
-  }
+void balanceScreen(string accounts[5][4], string userID, int index) {
+  // exit option
+  char options[4] = {'X'};
+  int size = sizeof(options)/sizeof(options[0]);
 
   // print balance
-  string text[3] = {
+  string text[5] = {
     "Account #: " + accounts[index][0],  
     "Account Name: " + accounts[index][1],  
     "Balance: " + accounts[index][2],  
+    " ",
+    "Press X to Exit."
   };
 
   // print screen contents
   printUI(text, sizeof(text)/sizeof(text[0]));
+
+  // get and validate and exit
+  char choice = validateChoice(choice, options, size);
 }
 
 
+// output #4 (withdrawal)
+void withdrawalScreen(string accounts[5][4], string userID, int index) {
+  // exit option
+  char choice;
+  char options[4] = {'X'};
+  int size = sizeof(options)/sizeof(options[0]);
+
+  string withdrawAmt;
+  double balance = stod(accounts[index][2]);
+  
+  string text[4] = {
+    "Enter amount to be widrawn",  
+    "__________",  
+    " ",  
+    "Press X to Exit."
+  };
+
+  // print screen contents
+  printUI(text, sizeof(text)/sizeof(text[0]));
+
+  while (true) {
+    cout << "Amount: ";
+    cin >> withdrawAmt;
+
+    // Check if the input is 'X'
+    if (toupper(withdrawAmt[0]) == 'X' && withdrawAmt.length() == 1) {
+      return;
+    }
+
+    // Check if the input is a valid number
+    bool valid = true;
+    for (int i = 0; i < withdrawAmt.length(); ++i) {
+      if (!isdigit(withdrawAmt[i])) {
+        valid = false;
+        break;
+      }
+    }
+
+    if (valid) {
+      try {
+        double amount = stod(withdrawAmt);
+        if (amount > balance) {
+          cout << "Insufficient funds." << endl;
+        } else {
+          balance -= amount;
+          accounts[index][2] = to_string(balance);
+          cout << "Withdrawal successful.";
+          return;
+        }
+      } catch (const invalid_argument &e) {
+        cout << "Invalid input. Please enter a valid amount." << endl;
+      } catch (const out_of_range &e) {
+        cout << "Invalid input. Please enter a valid amount." << endl;
+      }
+    } else {
+      cout << "Invalid input. Please enter a valid amount or 'X' to exit." << endl;
+    }
+
+    // Clear input buffer
+    cin.clear();
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+  }
+}
+
 // ! TO BE IMPLEMENTED
+

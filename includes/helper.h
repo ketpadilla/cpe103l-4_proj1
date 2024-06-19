@@ -59,3 +59,16 @@ string validateUser(string text, string input, string accounts[5][4], int attemp
     return validateUser(text, input, accounts, attempts, size, index);
   }
 }
+
+
+
+// find index of userID in accounts
+int findIndex(string accounts[5][4], string userID) {
+  for (int i = 0; i < 5; i++) {
+    if (userID == accounts[i][0]) {
+      return i;
+    }
+  }
+
+  return -1;
+}
