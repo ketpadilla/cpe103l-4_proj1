@@ -10,13 +10,16 @@
 // header files and namespace
 #include <iostream>
 #include <string>
+#include <limits>
 #include "includes/printUI.h"
+#include "includes/helper.h"
 using namespace std;
 
 
 // prototype functions
 char homeScreen(char choice);
 string identifyUser(string accounts[5][4], string userID, string admin[4]);
+
 
 // global variables
 string accounts[5][4] = {
@@ -53,10 +56,10 @@ int main() {
 }
 
 
-// * function definitions
 // output #1
 char homeScreen(char choice) {
   char options[2] = {'S', 'Q'};
+  int size = sizeof(options)/sizeof(options[0]);
   string text[3] = {
     "S -> Start Transaction",
     "Q -> Quit",
@@ -66,14 +69,8 @@ char homeScreen(char choice) {
   // print screen contents
   printUI(text, sizeof(text)/sizeof(text[0]));
 
-  // get user choice
-  cout << "Choice: ";
-  cin >> choice;
-
-  // validate user input
-  // ! TO IMPLEMENT: user input validation
-
-  // return user choice
+  // get, validate, and return choice
+  choice = validateChoice(choice, options, size);
   return choice;
 }
 
@@ -81,24 +78,42 @@ char homeScreen(char choice) {
 // output #2
 string identifyUser(string accounts[5][4], string userID, string admin[4]) {
   string userNum, acctPin;
-  int index;
-  char choice;
-  string text[2] = {
+  int size = 5; 
+  int attempts = 0;
+
+  // account number
+  string textNum[2] = {
+    "Please enter your account number to start:",
+    "__________"
+  };
+
+  // print screen contents
+  printUI(textNum, sizeof(textNum)/sizeof(textNum[0]));
+
+  // validate user input
+  userNum = validateUser("Account Number", userNum, accounts, attempts, size, 0);
+  
+  if (userNum == "-1") {
+    cout << "Invalid account number. Try again." << endl;
+    return "-1";
+  }
+
+  // account pin
+  string textPin[2] = {
     "Enter your pin number:",
     "__________"
   };
 
   // print screen contents
-  printUI(text, sizeof(text)/sizeof(text[0]));
+  printUI(textPin, sizeof(textPin)/sizeof(textPin[0]));
 
-  // get acct pin
-  cout << "Pin: ";
-  cin >> acctPin;
+  acctPin = validateUser("Account Number", acctPin, accounts, attempts, size, 3);
+  if (acctPin == "-1") {
+    cout << "CAPTURED CARD…. PLEASE CALL 143-44" << endl;
+    return "-1";
+  }
 
-  // ! TO BE IMPLEMENTED
-  return "To be implemented...";
+  return "-1";
 }
 
 // ! TO BE IMPLEMENTED
-
-
