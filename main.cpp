@@ -26,8 +26,8 @@ char balanceScreen(string accounts[][4], string userID, int index);
 char withdrawalScreen(string accounts[][4], string userID, int index);
 char depositScreen(string accounts[][4], string userID, int index);
 char adminPages(char choice, string accounts[][4]);
+void addCustomer(string accounts[][4]);
 string identifyUser(string accounts[][4], string userID);
-
 
 // global variables
 string accounts[][4] = {
@@ -66,12 +66,19 @@ int main() {
   }
 
   // admin access
-  while (userID == admin[0]) {
-    choice = adminScreen(choice);
-    choice = adminPages(choice, accounts);
+  //! TO REVISE SO THAT ARRAY UPDATES SEMI-PERMANENTLY
+  bool adminAccess = false;
+  if (userID == admin[0]) {
+    adminAccess = true;
+  }
+
+  while (adminAccess) {
     if (choice == 'X') {
       return 0;
     }
+    
+    choice = adminScreen(choice);
+    choice = adminPages(choice, accounts);
   }
   
   // find index of userID in accounts
@@ -79,10 +86,12 @@ int main() {
 
   // customer transaction
   for (;;) {
-    choice = transactionScreen(choice);
-    choice = customerOptions(choice, accounts, userID, index);
-    if (choice == 'X') {
-      break;
+    if (userID != admin[0] or choice != 'X') {
+      choice = transactionScreen(choice);
+      choice = customerOptions(choice, accounts, userID, index);
+      if (choice == 'X') {
+        break;
+      }
     }
   }
 
@@ -360,12 +369,10 @@ char depositScreen(string accounts[][4], string userID, int index) {
 
 // output #5 (admin only)
 char adminPages(char choice, string accounts[][4]) {
+  // admin options
   switch (choice) {
     case 'V':
       showDetails(accounts);
-      cout << "Press any key to continue." << endl;
-      cin.ignore(numeric_limits<streamsize>::max(), '\n');
-      cin.get();
       break;
     case 'A':
       addCustomer(accounts);
@@ -386,4 +393,51 @@ char adminPages(char choice, string accounts[][4]) {
       break;
   }
   return choice;
+}
+
+
+void addCustomer(string accounts[][4]) {
+  string accountNumber, name, balance, pin;
+  int size = 0;
+  // get size
+  for (int i = 0; i < 5; i++) {
+    if (accounts[i][0].empty()) {
+      break;
+    }
+    size++;
+  }
+
+  // create new array with size + 1
+  string newAccounts[size + 1][4];
+
+ // copy old array to new array
+  for (int i = 0; i < size; i++) {
+    for (int j = 0; j < 4; j++) {
+      newAccounts[i][j] = accounts[i][j];
+    }
+  }
+
+  // get user input for new customer details
+  cout << "Enter account number: ";
+  cin >> accountNumber;
+  cout << "Enter name: ";
+  cin.ignore();
+  getline(cin, name);
+  cout << "Enter balance: ";
+  cin >> balance;
+  cout << "Enter PIN: ";
+  cin >> pin;
+
+  // add new customer to the accounts array
+  newAccounts[size][0] = accountNumber;
+  newAccounts[size][1] = name;
+  newAccounts[size][2] = balance;
+  newAccounts[size][3] = pin;
+
+  // copy new array to old array
+  accounts = newAccounts;
+  cout << "New customer added successfully!" << endl;
+
+  // show new details
+  showDetails(accounts);
 }

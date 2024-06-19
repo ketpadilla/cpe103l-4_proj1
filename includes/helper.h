@@ -89,13 +89,26 @@ int findIndex(string accounts[][4], string userID) {
 
 // show customer details
 void showDetails(string accounts[][4]) {
-  for (int i = 0; i < 5; i++) {
+  // get size
+  int size = 0;
+  for (int i = 0; ; i++) {
+    if (accounts[i][0].empty()) {
+      break;
+    }
+    size++;
+  }
+
+  for (int i = 0; i < size; i++) {
     cout << "Account Number: " << accounts[i][0] << endl;
     cout << "Name: " << accounts[i][1] << endl;
     cout << "Balance: " << accounts[i][2] << endl;
     cout << "PIN: " << accounts[i][3] << endl;
     cout << endl;
   }
+
+  cout << "Press any key to continue." << endl;
+  cin.ignore(numeric_limits<streamsize>::max(), '\n');
+  cin.get();
 }
 
 
@@ -163,44 +176,6 @@ void changePin(string accounts[][4]) {
   for (int i = 0; i < 4; i++) {
     cout << accounts[index][i] << endl;
   }
-}
-
-
-// ! new customer does not save to array
-// add new customer
-string addCustomer(string accounts[][4]) {
-  // get size
-  int size = 0;
-  for (int i = 0; i < 5; i++) {
-    if (accounts[i][0].empty()) {
-      break;
-    }
-    size++;
-  }
-
-  cout << size << endl;
-  // get user input for new customer details
-  string accountNumber, name, balance, pin;
-  cout << "Enter account number: ";
-  cin >> accountNumber;
-  cout << "Enter name: ";
-  cin.ignore();
-  getline(cin, name);
-  cout << "Enter balance: ";
-  cin >> balance;
-  cout << "Enter PIN: ";
-  cin >> pin;
-
-  // add new customer to the accounts array
-  accounts[size + 1][0] = accountNumber;
-  accounts[size + 1][1] = name;
-  accounts[size + 1][2] = balance;
-  accounts[size + 1][3] = pin;
-
-  // increment the size counter
-  size++;
-
-  cout << "New customer added successfully!" << endl;
 }
 
 
