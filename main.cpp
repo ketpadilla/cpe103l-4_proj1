@@ -43,6 +43,7 @@ int main() {
   switch (choice) {
     case 'S':
       userID = identifyUser(accounts, userID, admin);
+      cout << userID << endl;
       break;
     case 'Q':
       cout << "Quit" << endl;
@@ -50,6 +51,7 @@ int main() {
     default:
       cout << "Invalid choice" << endl;
       break;
+
   }
 
   return 0;
@@ -90,9 +92,8 @@ string identifyUser(string accounts[5][4], string userID, string admin[4]) {
   // print screen contents
   printUI(textNum, sizeof(textNum)/sizeof(textNum[0]));
 
-  // validate user input
+  // get and validate user input
   userNum = validateUser("Account Number", userNum, accounts, attempts, size, 0);
-  
   if (userNum == "-1") {
     cout << "Invalid account number. Try again." << endl;
     return "-1";
@@ -107,13 +108,15 @@ string identifyUser(string accounts[5][4], string userID, string admin[4]) {
   // print screen contents
   printUI(textPin, sizeof(textPin)/sizeof(textPin[0]));
 
+  // get and validate user input
   acctPin = validateUser("Account Number", acctPin, accounts, attempts, size, 3);
   if (acctPin == "-1") {
     cout << "CAPTURED CARD…. PLEASE CALL 143-44" << endl;
     return "-1";
   }
 
-  return "-1";
+  // return validated account number
+  return userNum;
 }
 
 // ! TO BE IMPLEMENTED

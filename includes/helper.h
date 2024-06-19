@@ -35,6 +35,7 @@ string validateUser(string text, string input, string accounts[5][4], int attemp
   cout << text << ": ";
   cin >> input;
 
+  string output = input;
   input.erase(remove(input.begin(), input.end(), '-'), input.end());
 
   bool valid = false;
@@ -51,7 +52,7 @@ string validateUser(string text, string input, string accounts[5][4], int attemp
   }; 
 
   if (valid) {
-    return input;
+    return output;
   } else {
     cout << "Invalid input" << endl;
     attempts++;
