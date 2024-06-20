@@ -36,11 +36,11 @@ char validateChoice(char choice, char options[], int size) {
 
 // validate user data
 string validateUser(string text, string input, string accounts[][4], int attempts, int size, int index) {
-  if (attempts == 3) {
+  if (attempts == 0) {
     return "-1";
   };
 
-  cout << "Attempts left: " << 3 - attempts << endl;
+  cout << "Attempts left: " << attempts << endl;
   cout << text << ": ";
   cin >> input;
 
@@ -68,11 +68,10 @@ string validateUser(string text, string input, string accounts[][4], int attempt
     return output;
   } else {
     cout << "Invalid input" << endl;
-    attempts++;
+    attempts--;
     return validateUser(text, input, accounts, attempts, size, index);
   }
 }
-
 
 
 // find index of userID in accounts
@@ -87,8 +86,7 @@ int findIndex(string accounts[][4], string userID) {
 }
 
 
-// show customer details
-void showDetails(string accounts[][4]) {
+int getSize(string accounts[][4]) {
   // get size
   int size = 0;
   for (int i = 0; ; i++) {
@@ -98,84 +96,7 @@ void showDetails(string accounts[][4]) {
     size++;
   }
 
-  for (int i = 0; i < size; i++) {
-    cout << "Account Number: " << accounts[i][0] << endl;
-    cout << "Name: " << accounts[i][1] << endl;
-    cout << "Balance: " << accounts[i][2] << endl;
-    cout << "PIN: " << accounts[i][3] << endl;
-    cout << endl;
-  }
-
-  cout << "Press any key to continue." << endl;
-  cin.ignore(numeric_limits<streamsize>::max(), '\n');
-  cin.get();
-}
-
-
-// edit customer details
-void editDetails(string accounts[][4]) {
-  // get userID
-  string userID;
-  cout << "Enter account number: ";
-  cin >> userID;
-
-  // print current details
-  int index = findIndex(accounts, userID);
-  cout << "Account details:" << endl;
-  for (int i = 0; i < 4; i++) {
-    cout << accounts[index][i] << endl;
-  }
-
-  // change details
-  if (index != -1) {
-    cout << "Enter new name: ";
-    cin.ignore();
-    getline(cin, accounts[index][1]);
-
-    cout << "Enter new balance: ";
-    cin >> accounts[index][2];
-    
-    cout << "Details updated successfully!" << endl;
-  } else {
-    cout << "User not found!" << endl;
-  }
-
-  // print new details
-  cout << endl << "Account details:" << endl;
-  for (int i = 0; i < 4; i++) {
-    cout << accounts[index][i] << endl;
-  }
-}
-
-
-// change customer
-void changePin(string accounts[][4]) {
-  // get userID
-  string userID;
-  cout << "Enter account number: ";
-  cin >> userID;
-
-  // print current details
-  int index = findIndex(accounts, userID);
-  cout << "Account details:" << endl;
-  for (int i = 0; i < 4; i++) {
-    cout << accounts[index][i] << endl;
-  }
-
-  // change pin
-  if (index != -1) {
-    cout << "Enter new PIN: ";
-    cin >> accounts[index][3];
-    cout << endl << "Pin updated successfully!" << endl;
-  } else {
-    cout << "User not found!" << endl;
-  }
-
-  // print new details
-  cout << "Account details:" << endl;
-  for (int i = 0; i < 4; i++) {
-    cout << accounts[index][i] << endl;
-  }
+  return size;
 }
 
 

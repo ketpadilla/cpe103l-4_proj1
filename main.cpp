@@ -20,14 +20,10 @@ using namespace std;
 
 // prototype functions
 char homeScreen(char choice);
-char transactionScreen(char choice);
-char customerOptions(char choice, string accounts[][4], string userID, int index);
-char balanceScreen(string accounts[][4], string userID, int index);
-char withdrawalScreen(string accounts[][4], string userID, int index);
-char depositScreen(string accounts[][4], string userID, int index);
-char adminPages(char choice, string accounts[][4]);
-void addCustomer(string accounts[][4]);
 string identifyUser(string accounts[][4], string userID);
+char transactionScreen(char choice);
+void balanceScreen(string acctNum, string acctName, string balance);
+string transactions(string balance, string type);
 
 // global variables
 string accounts[][4] = {
@@ -37,61 +33,128 @@ string accounts[][4] = {
   {"4567-8901-2345", "Mina Mahal", "2500", "4444"},
   {"5678-9012-3456", "Cory Pot", "10000.00", "5555"}
 };
-string userID;
-int userAcct;
 
 
 // * main
 int main() {
   char choice;
+  int userAcct;
+  string userID;
 
-  // start
+  // * prompt start screen
   choice = homeScreen(choice);
   switch (choice) {
-    case 'S':
-      userID = identifyUser(accounts, userID);
+    case 'S': // validate use
+      userID = identifyUser(accounts, userID); 
+      if (userID == "-1") {
+        return 1; // exit program if invalid user
+      }
       break;
-    case 'Q':
+    case 'Q': // quit program
       cout << "Quiting program" << endl;
       return 0;
-    default:
+    default: // exit program if invalid choice
       cout << "Invalid choice" << endl;
       return 1;
-
   }
 
-  // final user validation
-  if (userID == "-1") {
-    return 1;
-  }
-
-  // admin access
-  //! TO REVISE SO THAT ARRAY UPDATES SEMI-PERMANENTY
-  bool adminAccess = false;
-  if (userID == admin[0]) {
+  // verify admin access
+  bool adminAccess = false; // no admin access
+  if (userID == admin[0]) { //
     adminAccess = true;
   }
 
+  // * start admin access
+  int index, size, newSize;
   while (adminAccess) {
-    if (choice == 'X') {
-      return 0;
+    if (choice == 'X') { 
+      break; // end admin access
     }
-    
-    choice = adminScreen(choice);
-    choice = adminPages(choice, accounts);
-  }
-  
-  // find index of userID in accounts
-  int index = findIndex(accounts, userID);  
 
-  // customer transaction
-  for (;;) {
-    if (userID != admin[0] or choice != 'X') {
-      choice = transactionScreen(choice);
-      choice = customerOptions(choice, accounts, userID, index);
-      if (choice == 'X') {
+    // choose and make admin function
+    choice = adminScreen(choice);
+    switch (choice) {
+      case 'V':
+        showDetails(accounts);
+        choice = 'S';
         break;
-      }
+      case 'A':
+        // get size and new size of accounts
+        size = getSize(accounts);
+        newSize = size++;
+
+        // add new customer
+        accounts[newSize][0] = addCustomer("Account Number");
+        accounts[newSize][1] = addCustomer("Name");
+        accounts[newSize][2] = addCustomer("Balance");
+        accounts[newSize][3] = addCustomer("Pin");
+
+        choice = 'S';
+        break;
+      case 'E':
+        index = selectCustomer(accounts);
+        accounts[index][1] = changeDetail(accounts[index][1], "Name");
+        accounts[index][2] = changeDetail(accounts[index][1], "Balance");
+        choice = 'S';
+        break;
+      case 'C':
+        index = selectCustomer(accounts);
+        accounts[index][3] = changePin(accounts[index][3]);
+        choice = 'S';
+        break;
+      case 'X':
+        cout << "Exiting program." << endl;
+        choice = 'X';
+        break;
+      default:
+        cout << "Invalid choice." << endl;
+        choice = 'X';
+        break;
+    }
+  }
+
+  // if userID is admin's then admin is finished 
+  // if choice is X then the user is finished
+  if (userID == admin[0] or choice == 'X') {
+    return 0; 
+  }
+
+  // * start customer transaction
+  index = findIndex(accounts, userID); // get index of user in accounts
+  for (;;) {
+    // get/update customer data  
+    string acctNum = accounts[index][0]; // account number
+    string acctName = accounts[index][1]; // account name
+    string balance = accounts[index][2]; // account balance
+
+    if (choice == 'X') {
+      break; // break from loop if user is finished
+    }
+
+    // choose and make type of transaction
+    choice = transactionScreen(choice);
+    switch (choice) {
+      case 'B': // check balance
+        balanceScreen(acctNum, acctName, balance);
+        choice = 'X'; 
+        break;
+      case 'W': // withdraw
+        accounts[index][2] = transactions(balance, "withdraw");
+        choice = 'S';
+        break;
+      case 'D': // deposit
+        // data = depositScreen(balance);
+        accounts[index][2] = transactions(balance, "deposit");
+        choice = 'S';
+        break;
+      case 'C': // cancel transaction
+        cout << "Canceling transaction" << endl;
+        choice = 'X';
+        break;
+      default: // invalid, exit program
+        cout << "Invalid choice" << endl;
+        choice = 'X';
+        break;
     }
   }
 
@@ -101,15 +164,17 @@ int main() {
 
 // output #1
 char homeScreen(char choice) {
+  // initialize available options and number of options
   char options[2] = {'S', 'Q'};
   int size = sizeof(options)/sizeof(options[0]);
+
+  // screen contents
   string text[3] = {
     "S -> Start Transaction",
     "Q -> Quit",
     "Enter your choice: _____" 
   };
-
-  // print screen contents
+  
   printUI(text, sizeof(text)/sizeof(text[0]));
 
   // get, validate, and return choice
@@ -120,17 +185,25 @@ char homeScreen(char choice) {
 
 // output #2
 string identifyUser(string accounts[][4], string userID) {
+  // initialize user input and available attempts
   string userNum, acctPin;
-  int size = 5; 
-  int attempts = 0;
+  int attempts = 3;
 
-  // account number
+  // get array size
+  int size = 0;
+  for (int i = 0; ; i++) {
+    if (accounts[i][0].empty()) {
+      break;
+    }
+    size++;
+  }
+
+  // screen contents
   string textNum[2] = {
     "Please enter your account number to start:",
     "__________"
   };
 
-  // print screen contents
   printUI(textNum, sizeof(textNum)/sizeof(textNum[0]));
 
   // get and validate user input
@@ -140,13 +213,12 @@ string identifyUser(string accounts[][4], string userID) {
     return "-1";
   }
 
-  // account pin
+  // screen contents
   string textPin[2] = {
     "Enter your pin number:",
     "__________"
   };
 
-  // print screen contents
   printUI(textPin, sizeof(textPin)/sizeof(textPin[0]));
 
   // get and validate user input
@@ -192,42 +264,17 @@ char transactionScreen(char choice) {
 }
 
 
-// output #3 
-char customerOptions(char choice, string accounts[][4], string userID, int index) {
-  switch (choice) {
-    case 'B':
-      choice = balanceScreen(accounts, userID, index);
-      break;
-    case 'W':
-      choice = withdrawalScreen(accounts, userID, index);
-      break;
-    case 'D':
-      choice = depositScreen(accounts, userID, index);
-      break;
-    case 'C':
-      cout << "Canceling transaction" << endl;
-      choice = 'X';
-      break;
-    default:
-      cout << "Invalid choice" << endl;
-      choice = 'X';
-      break;
-  }
-
-  return choice;
-}
-
 // output #4 (balance)
-char balanceScreen(string accounts[][4], string userID, int index) {
+void balanceScreen(string acctNum, string acctName, string balance) {
   // exit option
   char options[4] = {'X'};
   int size = sizeof(options)/sizeof(options[0]);
 
   // print balance
   string text[] = {
-    "Account #: " + accounts[index][0],  
-    "Account Name: " + accounts[index][1],  
-    "Balance: " + accounts[index][2],  
+    "Account #: " + acctNum,  
+    "Account Name: " + acctName,  
+    "Balance: " + balance,  
     " ",
     "Press X to Exit."
   };
@@ -237,207 +284,75 @@ char balanceScreen(string accounts[][4], string userID, int index) {
 
   // get and validate and exit
   char choice = validateChoice(choice, options, size);
-  return choice;
 }
 
 
-// output #4 (withdrawal)
-char withdrawalScreen(string accounts[][4], string userID, int index) {
-  // exit option
-  char choice;
-  char options[4] = {'X'};
-  int size = sizeof(options)/sizeof(options[0]);
+// output #4 (withdrawal and deposit)
+string transactions(string balance, string type) {
+  // initialize transaction amount and copy of balance
+  string transactionAmt;
+  double balanceCopy = stod(balance);
 
-  string withdrawAmt;
-  double balance = stod(accounts[index][2]);
-  
+  // screen contents
   string text[4] = {
-    "Enter amount to be widrawn",  
+    "Enter amount to be " + type,  
     "__________",  
     " ",  
     "Press X to Exit."
   };
 
-  // print screen contents
   printUI(text, sizeof(text)/sizeof(text[0]));
 
-  while (true) {
+  // get and validate input and make transaction
+    while (true) {
     cout << "Amount: ";
-    cin >> withdrawAmt;
+    cin >> transactionAmt;
 
-    // Check if the input is 'X'
-    if (toupper(withdrawAmt[0]) == 'X' && withdrawAmt.length() == 1) {
-        return choice;
+    // check if the input is 'X'
+    if (toupper(transactionAmt[0]) == 'X' && transactionAmt.length() == 1) {
+        return "S";
     }
 
-    // Check if the input is a valid number
+    // check if the input is a valid number
     bool valid = true;
-    for (int i = 0; i < withdrawAmt.length(); ++i) {
-      if (!isdigit(withdrawAmt[i])) {
-        valid = false;
+    for (int i = 0; i < transactionAmt.length(); ++i) {
+      if (!isdigit(transactionAmt[i])) {
+        valid = false; // input is not a number
         break;
       }
     }
 
+    // process transaction
     if (valid) {
       try {
-        double amount = stod(withdrawAmt);
-        if (amount > balance) {
-          cout << "Insufficient funds." << endl;
-        } else {
-          balance -= amount;
-          accounts[index][2] = to_string(balance);
-          cout << "Withdrawal successful." << endl;
-          return 'S';
+        double amount = stod(transactionAmt); // convert string into numeric
+        if (type == "withdraw") { // make withdrawal
+          if (amount > balanceCopy) { // check if withdrawal amount is greater than balance
+            cout << "Invalid transaction type." << endl;
+          } else {
+            balanceCopy -= amount;
+          }
+        } else if (type == "deposit") { // make deposit
+          balanceCopy += amount;
+        } else { // invalid transaction type, return balance as is
+          return balance;
         }
-      } catch (const invalid_argument &e) {
+
+          // update balance and return
+          balance = to_string(balanceCopy);
+          cout << "Transaction successful." << endl; 
+          return balance;
+      } catch (const invalid_argument &e) { // invalid input
         cout << "Invalid input. Please enter a valid amount." << endl;
-      } catch (const out_of_range &e) {
+      } catch (const out_of_range &e) { // invalid input
         cout << "Invalid input. Please enter a valid amount." << endl;
       }
-    } else {
+    } else { // invalid input
       cout << "Invalid input. Please enter a valid amount or 'X' to exit." << endl;
     }
 
-    // Clear input buffer
+    // clear input buffer
     cin.clear();
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
   }
-}
-
-
-// output #4 (deposit)
-char depositScreen(string accounts[][4], string userID, int index) {
-  // exit option
-  char choice;
-  char options[4] = {'X'};
-  int size = sizeof(options)/sizeof(options[0]);
-
-  string depositAmt;
-  double balance = stod(accounts[index][2]);
-  
-  string text[4] = {
-    "Enter amount to be widrawn",  
-    "__________",  
-    " ",  
-    "Press X to Exit."
-  };
-
-  // print screen contents
-  printUI(text, sizeof(text)/sizeof(text[0]));
-
-  while (true) {
-    cout << "Amount: ";
-    cin >> depositAmt;
-
-    // Check if the input is 'X'
-    if (toupper(depositAmt[0]) == 'X' && depositAmt.length() == 1) {
-      return choice;
-    }
-
-    // Check if the input is a valid number
-    bool valid = true;
-    for (int i = 0; i < depositAmt.length(); ++i) {
-      if (!isdigit(depositAmt[i])) {
-        valid = false;
-        break;
-      }
-    }
-
-    if (valid) {
-      try {
-        double amount = stod(depositAmt);
-        balance += amount;
-        accounts[index][2] = to_string(balance);
-        cout << "Deposit successful."  << endl;
-        return 'S';
-      } catch (const invalid_argument &e) {
-        cout << "Invalid input. Please enter a valid amount." << endl;
-      } catch (const out_of_range &e) {
-        cout << "Invalid input. Please enter a valid amount." << endl;
-      }
-    } else {
-      cout << "Invalid input. Please enter a valid amount or 'X' to exit." << endl;
-    }
-
-    // Clear input buffer
-    cin.clear();
-    cin.ignore(numeric_limits<streamsize>::max(), '\n');
-  }
-}
-
-
-// output #5 (admin only)
-char adminPages(char choice, string accounts[][4]) {
-  // admin options
-  switch (choice) {
-    case 'V':
-      showDetails(accounts);
-      break;
-    case 'A':
-      addCustomer(accounts);
-      break;
-    case 'E':
-      editDetails(accounts);
-      break;
-    case 'C':
-      changePin(accounts);
-      break;
-    case 'X':
-      cout << "Exiting program." << endl;
-      choice = 'X';
-      break;
-    default:
-      cout << "Invalid choice." << endl;
-      choice = 'X';
-      break;
-  }
-  return choice;
-}
-
-
-void addCustomer(string accounts[][4]) {
-  string accountNumber, name, balance, pin;
-  int size = 0;
-  // get size
-  for (int i = 0; i < 5; i++) {
-    if (accounts[i][0].empty()) {
-      break;
-    }
-    size++;
-  }
-
-  // create new array with size + 1
-  string newAccounts[size + 1][4];
-
- // copy old array to new array
-  for (int i = 0; i < size; i++) {
-    for (int j = 0; j < 4; j++) {
-      newAccounts[i][j] = accounts[i][j];
-    }
-  }
-
-  // get user input for new customer details
-  cout << "Enter account number: ";
-  cin >> accountNumber;
-  cout << "Enter name: ";
-  cin.ignore();
-  getline(cin, name);
-  cout << "Enter balance: ";
-  cin >> balance;
-  cout << "Enter PIN: ";
-  cin >> pin;
-
-  // add new customer to the accounts array
-  newAccounts[size][0] = accountNumber;
-  newAccounts[size][1] = name;
-  newAccounts[size][2] = balance;
-  newAccounts[size][3] = pin;
-
-  // copy new array to old array
-  accounts = newAccounts;
-  cout << "New customer added successfully!" << endl;
-
-  // show new details
-  showDetails(accounts);
 }
