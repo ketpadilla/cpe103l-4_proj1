@@ -100,4 +100,29 @@ int getSize(string accounts[][4]) {
 }
 
 
+// check if amount is only composed of 100, 500, and 1000 bills
+bool checkAmt(string amount, bool valid) {
+  // initialize variables
+  double amountCopy = stod(amount); // numeric copy
+  int bills[] = {1000, 500, 100}; // valid bills
+  int billCount[] = {0, 0, 0}; // count of bills
+
+  // check amount per denomination
+  for (int i = 0; i < 3; i++) {
+    while (amountCopy >= bills[i]) {
+      billCount[i]++;
+      amountCopy -= bills[i];
+    }
+  }
+
+  // check if amount is valid
+  if (amountCopy != 0) {
+    cout << "Invalid amount!" << endl;
+    valid = false;
+  }
+
+  return valid;
+}
+
+
 #endif // HELPER_H

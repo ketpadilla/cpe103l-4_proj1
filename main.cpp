@@ -322,9 +322,15 @@ string transactions(string balance, string type) {
       }
     }
 
+    // check if input is only composed of 100, 500, and 1000 bills
+    if (valid) {
+      valid = checkAmt(transactionAmt, valid);
+    }
+
     // process transaction
     if (valid) {
       try {
+
         double amount = stod(transactionAmt); // convert string into numeric
         if (type == "withdraw") { // make withdrawal
           if (amount > balanceCopy) { // check if withdrawal amount is greater than balance
