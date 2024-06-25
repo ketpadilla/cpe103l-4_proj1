@@ -337,17 +337,16 @@ string transactions(string balance, string type) {
             cout << "Invalid transaction type." << endl;
           } else {
             balanceCopy -= amount;
-            cout << "Transaction successful." << endl; 
           }
         } else if (type == "deposit") { // make deposit
           balanceCopy += amount;
-          cout << "Transaction successful." << endl; 
         } else { // invalid transaction type, return balance as is
           return balance;
         }
 
           // update balance and return
           balance = to_string(balanceCopy);
+          cout << "Transaction successful." << endl; 
           return balance;
       } catch (const invalid_argument &e) { // invalid input
         cout << "Invalid input. Please enter a valid amount." << endl;
